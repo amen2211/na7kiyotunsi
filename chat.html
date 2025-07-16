@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>💬 دردشة الغروب</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background: #fafafa; padding: 2rem; }
+    #chat-box { border: 1px solid #ccc; height: 400px; overflow-y: auto; padding: 1rem; margin-bottom: 1rem; background: white; }
+    #message { width: 80%; padding: 0.7rem; }
+    #sendBtn { padding: 0.7rem 1.5rem; background: #1976d2; color: white; border: none; border-radius: 10px; }
+    #sendBtn:hover { background: #135ba1; }
+  </style>
+</head>
+<body>
+
+  <h2>💬 الدردشة</h2>
+  <div id="chat-box"></div>
+  <input type="text" id="message" placeholder="اكتب رسالتك..." />
+  <button id="sendBtn">إرسال</button>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAarHXsMOfclxmFM2cxQ5p4SoM32jLPsjU",
+      authDomain: "chat-c451f.firebaseapp.com",
+      projectId: "chat-c451f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message');
+    const sendBtn = document.getElementById('sendBtn');
+    const groupId = localStorage.getItem('currentGroupId') || null;
+
+    if (!groupId) {
+      alert('لم يتم الانضمام إلى أي غروب');
+      window.location.href = 'join-group.html';
+    }
+
+    // عرض الرسائل
+    db.collection('messages')
+      .where('groupId', '==', groupId)
+      .orderBy('timestamp')
+      .onSnapshot(snapshot => {
+        chatBox.innerHTML = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.textContent = `${data.username || 'مجهول'}: ${data.text}`;
+          chatBox.appendChild(div);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+
+    // إرسال رسالة
+    sendBtn.onclick = () => {
+      const text = messageInput.value.trim();
+      if (!text) return;
+      db.collection('messages').add({
+        text: text,
+        username: 'زائر', // يمكنك تغييره بإسم المستخدم
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        groupId: groupId
+      });
+      messageInput.value = '';
+    };
+  </script>
+</body>
+</html>
+
+

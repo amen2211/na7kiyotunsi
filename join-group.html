@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>انضم إلى غروب</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background: #f0fff0; text-align: center; padding: 3rem; }
+    input, button { padding: 1rem; margin: 1rem; font-size: 1.2rem; width: 300px; }
+    button { background: #388e3c; color: white; border: none; border-radius: 10px; }
+    button:hover { background: #2e7031; }
+  </style>
+</head>
+<body>
+
+  <h2>📥 أدخل كود الغروب</h2>
+  <input id="groupCode" type="text" placeholder="مثلاً: TNS2025" />
+  <br />
+  <button onclick="joinGroup()">انضم</button>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAarHXsMOfclxmFM2cxQ5p4SoM32jLPsjU",
+      authDomain: "chat-c451f.firebaseapp.com",
+      projectId: "chat-c451f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function joinGroup() {
+      const code = document.getElementById('groupCode').value.trim();
+      if (!code) {
+        alert('يرجى إدخال كود الغروب');
+        return;
+      }
+
+      db.collection('groups').where('code', '==', code).get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            alert('الغروب غير موجود');
+            return;
+          }
+
+          const groupId = snapshot.docs[0].id;
+          localStorage.setItem('currentGroupId', groupId);
+          window.location.href = 'chat.html';
+        });
+    }
+  </script>
+</body>
+</html>
