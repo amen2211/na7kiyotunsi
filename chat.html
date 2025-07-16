@@ -4,11 +4,85 @@
   <meta charset="UTF-8">
   <title>💬 دردشة الغروب</title>
   <style>
-    body { font-family: 'Tajawal', sans-serif; background: #fafafa; padding: 2rem; }
-    #chat-box { border: 1px solid #ccc; height: 400px; overflow-y: auto; padding: 1rem; margin-bottom: 1rem; background: white; }
-    #message { width: 80%; padding: 0.7rem; }
-    #sendBtn { padding: 0.7rem 1.5rem; background: #1976d2; color: white; border: none; border-radius: 10px; }
-    #sendBtn:hover { background: #135ba1; }
+    /* عام */
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #fefefe, #d9f0e8);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      color: #007A4D; /* لون تونسي مثل العلم */
+      text-shadow: 1px 1px 3px #9be3c1;
+    }
+    #chat-box {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      height: 450px;
+      overflow-y: auto;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 2px solid #007A4D;
+    }
+    #chat-box div {
+      background: #d9f0e8;
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.6rem;
+      border-radius: 10px;
+      box-shadow: 1px 1px 4px rgba(0, 122, 77, 0.3);
+      word-wrap: break-word;
+      font-size: 1rem;
+    }
+    #message {
+      width: 100%;
+      max-width: 520px;
+      padding: 0.8rem 1rem;
+      border: 2px solid #007A4D;
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    #message:focus {
+      border-color: #44b07d;
+      box-shadow: 0 0 8px #44b07d;
+    }
+    #sendBtn {
+      background-color: #007A4D;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,122,77,0.3);
+      transition: background-color 0.3s ease;
+    }
+    #sendBtn:hover {
+      background-color: #44b07d;
+      box-shadow: 0 6px 12px rgba(68,176,125,0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      #chat-box, #message {
+        max-width: 100%;
+      }
+      #sendBtn {
+        width: 100%;
+        max-width: 600px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -60,12 +134,17 @@
       if (!text) return;
       db.collection('messages').add({
         text: text,
-        username: 'زائر', // يمكنك تغييره بإسم المستخدم
+        username: localStorage.getItem('username') || 'مجهول',
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         groupId: groupId
       });
       messageInput.value = '';
     };
+    const username = localStorage.getItem('username');
+    if (!username) {
+      alert('الرجاء تسجيل الدخول أولاً');
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 </html>
